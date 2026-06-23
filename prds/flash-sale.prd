@@ -1,0 +1,137 @@
+# Problem Context
+We need a backend feature to define a flash sale period. This period must have a strict start date and end date. Within any given period, only one product can be tied to the flash sale. The product configuration is defined simultaneously when entering the flash sale data. 
+
+This feature is built using **Nest.js**, **TypeScript**, **TypeORM**, and **PostgreSQL**. Follow existing project modular patterns.
+
+---
+
+# Architecture & Database Schema
+
+## 1. Database Entities
+
+### Products Entity
+* **File Path:** `/src/entities/products.entity.ts` (or matching project file naming convention)
+* **Table Name:** `products`
+* **Attributes:**
+    * `id`: Primary Generated Column (UUID)
+    * `name`: String / `varchar`
+    * `unit`: String / `varchar`
+    * `availableStock`: Number / `integer`, column mapped as `available_stock`
+    * `createdAt`: Date / `timestamp`, default `NOW()`, column mapped as `created_at`
+    * `updatedAt`: Date / `timestamp`, default `NOW()`, on update `NOW()`, column mapped as `updated_at`
+
+### Flash Sale Entity
+* **File Path:** `/src/entities/flash-sales.entity.ts`
+* **Table Name:** `flash_sales`
+* **Attributes:**
+    * `id`: Primary Generated Column (UUID)
+    * `startDate`: Date / `timestamp`, column mapped as `start_date`
+    * `endDate`: Date / `timestamp`, column mapped as `end_date`
+    * `createdAt`: Date / `timestamp`, default `NOW()`, column mapped as `created_at`
+    * `updatedAt`: Date / `timestamp`, default `NOW()`, on update `NOW()`, column mapped as `updated_at`
+    * **Relation:** Many-to-One relation to `Product` entity (`@ManyToOne(() => Product)`). Explicitly define the foreign key column as `product_id`.
+
+---
+
+## 2. Data Transfer Objects (DTOs)
+* **File Path:** `/src/modules/flash-sale/flash-sale.dto.ts`
+
+### `NewFlashSaleDTO`
+Used for validating incoming payload for creating a flash sale. Use `class-validator` and `class-transformer`. All fields must use `@IsNotEmpty({ message: '...' })` with descriptive messages.
+* `productName`: `string` (`@IsString()`)
+* `productUnit`: `string` (`@IsString()`)
+* `productAvailableStock`: `number` (`@IsInt()`, `@Min(0)`)
+* `startDate`: `string`/`Date` (`@IsDateString()` or `@Type(() => Date) @IsDate()`)
+* `endDate`: `string`/`Date` (`@IsDateString()` or `@Type(() => Date) @IsDate()`)
+
+### `FlashSaleInfoDTO`
+Internal/External object data shape containing plain entity representations.
+* `product`: `Product` entity type
+* `flashSale`: `FlashSale` entity type
+
+### `FlashSaleInfoResponseDTO`
+The root wrapper wrapper for endpoints.
+* `flashSaleInfo`: `FlashSaleInfoDTO | null`
+
+---
+
+## 3. Service Layer
+* **File Path:** `/src/modules/flash-sale/flash-sale.service.ts`
+* **Dependencies:** Inject both `Product` and `FlashSale` TypeORM repositories. Wrap mutating database transactions if required by project patterns.
+
+### Methods
+
+#### `addFlashSale(dto: NewFlashSaleDTO): Promise<FlashSaleInfoDTO>`
+Executes sequential creation logic under the following business validations:
+1.  **Chronological Validation:** Check if `dto.startDate` is chronologically earlier than `dto.endDate`. If false, throw `HttpException` with `HttpStatus.BAD_REQUEST`.
+2.  **Timeline Validation:** Check if `dto.startDate` is a future date/time compared to the current system execution time. If false, throw `HttpException` with `HttpStatus.BAD_REQUEST`.
+3.  **Collision Validation (Optional but Recommended):** Ensure the incoming date range does not overlap with any existing flash sale schedule. If it overlaps, throw `HttpException` with `HttpStatus.CONFLICT`.
+4.  **Execution:**
+    * Insert a new record into the `products` table using `productName`, `productUnit`, and `productAvailableStock`. Save and retrieve the generated `product` instance.
+    * Insert a new record into the `flash_sales` table using `startDate`, `endDate`, and attach the saved `product` relation instance.
+5.  **Return Value:** Map and return the values matches the exact shape of `FlashSaleInfoDTO`.
+
+#### `todayFlashSale(): Promise<FlashSaleInfoDTO | null>`
+* **Logic:** Query the `flash_sales` table to find a single record where the current system timestamp (`new Date()`) falls sequentially between `startDate` and `endDate` (`start_date <= NOW AND end_date >= NOW`). 
+* **Relation:** Eagerly load or left-join the associated `product` relation.
+* **Return:** Return the mapped data in `FlashSaleInfoDTO` shape, or `null` if no active flash sale is running.
+
+#### `getRecentFlashSale(): Promise<FlashSaleInfoDTO | null>`
+* **Logic:** Find the most recent flash sale relative to the current time. This means looking for records where `endDate < NOW()`, ordered by `endDate` DESC, limited to 1 record. (Alternatively, if "recent" includes currently active ones, sort by `startDate` DESC where `startDate <= NOW()`).
+* **Relation:** Include the `product` relation.
+* **Return:** Return as `FlashSaleInfoDTO` or `null`.
+
+#### `getUpcomingFlashSale(): Promise<FlashSaleInfoDTO | null>`
+* **Logic:** Query for the closest flash sale scheduled in the future where `startDate > NOW()`. Order by `startDate` ASC, limited to 1 record.
+* **Relation:** Include the `product` relation.
+* **Return:** Return as `FlashSaleInfoDTO` or `null`.
+
+---
+
+## 4. Controller Layer
+* **File Path:** `/src/modules/flash-sale/flash-sale.controller.ts`
+* **Routing Base:** `@Controller('flash-sale')`
+
+### Endpoints
+
+#### Create Flash Sale
+* **Route:** `POST /flash-sale`
+* **Payload:** `@Body() body: NewFlashSaleDTO`
+* **Response Wrapper:** `Promise<FlashSaleInfoResponseDTO>`
+* **Behavior:** Direct calls service `addFlashSale(body)`. Returns:
+    ```typescript
+    { "flashSaleInfo": result }
+    ```
+
+#### Get Active Flash Sale
+* **Route:** `GET /flash-sale`
+* **Response Wrapper:** `Promise<FlashSaleInfoResponseDTO>`
+* **Behavior:** Direct calls service `todayFlashSale()`. Returns:
+    ```typescript
+    { "flashSaleInfo": result } // result can be FlashSaleInfoDTO or null
+    ```
+
+#### Get Most Recent Flash Sale
+* **Route:** `GET /flash-sale/recent`
+* **Response Wrapper:** `Promise<FlashSaleInfoResponseDTO>`
+* **Behavior:** Direct calls service `getRecentFlashSale()`. Returns:
+    ```typescript
+    { "flashSaleInfo": result }
+    ```
+
+#### Get Upcoming Flash Sale
+* **Route:** `GET /flash-sale/upcoming`
+* **Response Wrapper:** `Promise<FlashSaleInfoResponseDTO>`
+* **Behavior:** Direct calls service `getUpcomingFlashSale()`. Returns:
+    ```typescript
+    { "flashSaleInfo": result }
+    ```
+
+---
+
+## 5. Module Setup
+* **File Path:** `/src/modules/flash-sale/flash-sale.module.ts`
+* **Configuration:** * Import `TypeOrmModule.forFeature([Product, FlashSale])`.
+    * Register `FlashSaleController` in `controllers`.
+    * Register `FlashSaleService` in `providers`.
+    * Ensure style matches `/src/modules/finance-manager/finance-manager.module.ts`.

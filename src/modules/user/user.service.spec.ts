@@ -1,20 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { FinanceManagerService } from './finance-manager.service';
+import { UserService } from './user.service';
 import { AppModule } from '../../app.module';
 import { DataSource } from 'typeorm';
 
-describe('FinanceManagerService', () => {
+describe('UserService', () => {
   let app: TestingModule;
   let dataSource: DataSource;
-  let service: FinanceManagerService;
+  let service: UserService;
 
   beforeAll(async () => {
     app = await Test.createTestingModule({
-      providers: [FinanceManagerService],
+      providers: [UserService],
       imports: [AppModule],
     }).compile();
 
-    service = app.get<FinanceManagerService>(FinanceManagerService);
+    service = app.get<UserService>(UserService);
     dataSource = app.get<DataSource>(DataSource);
   });
 
@@ -34,11 +34,11 @@ describe('FinanceManagerService', () => {
       });
 
       const [inserted] = await dataSource.query(
-        "SELECT * FROM `finance-managers` WHERE email='test-finance-manager@mail.com'",
+        "SELECT * FROM `users` WHERE email='test-finance-manager@mail.com'",
       );
 
       await dataSource.query(
-        "DELETE FROM `finance-managers` WHERE email='test-finance-manager@mail.com'",
+        "DELETE FROM `users` WHERE email='test-finance-manager@mail.com'",
       );
 
       expect(inserted).toBeDefined();
@@ -50,7 +50,7 @@ describe('FinanceManagerService', () => {
 
     it('should fail to register finance manager due to existing email"', async () => {
       await dataSource.query(
-        "INSERT INTO `finance-managers` (id, name, email, password) VALUES ('some-id', 'Register Finance Manager Test', 'test-finance-manager@mail.com', '123');",
+        "INSERT INTO `users` (id, name, email, password) VALUES ('some-id', 'Register Finance Manager Test', 'test-finance-manager@mail.com', '123');",
       );
 
       try {
@@ -67,7 +67,7 @@ describe('FinanceManagerService', () => {
         );
       } finally {
         await dataSource.query(
-          "DELETE FROM `finance-managers` WHERE email='test-finance-manager@mail.com'",
+          "DELETE FROM `users` WHERE email='test-finance-manager@mail.com'",
         );
       }
     });

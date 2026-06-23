@@ -7,7 +7,7 @@ import {
   ManyToOne,
   OneToOne,
 } from 'typeorm';
-import { FinanceManagerEntity } from './finance-managers';
+import { UserEntity } from './users';
 import { PaidInvoiceEntity } from './paid-invoices';
 
 @Entity({ name: 'invoices' })
@@ -51,14 +51,10 @@ export class InvoiceEntity {
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
   updatedAt: Date;
 
-  @ManyToOne(
-    () => FinanceManagerEntity,
-    (FinanceManagerEntity) => FinanceManagerEntity.invoices,
-    {
-      cascade: ['insert', 'update'],
-    },
-  )
-  financeManager: FinanceManagerEntity;
+  @ManyToOne(() => UserEntity, (UserEntity) => UserEntity.invoices, {
+    cascade: ['insert', 'update'],
+  })
+  user: UserEntity;
 
   @OneToOne(
     () => PaidInvoiceEntity,

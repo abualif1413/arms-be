@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../../app.module';
 import { DataSource } from 'typeorm';
 import { AuthService } from './auth.service';
-import { FinanceManagerEntity } from '../../entities/finance-managers';
+import { UserEntity } from '../../entities/users';
 import { JwtService } from '@nestjs/jwt';
 
 describe('AuthService', () => {
@@ -10,7 +10,7 @@ describe('AuthService', () => {
   let dataSource: DataSource;
   let service: AuthService;
   let jwtService: jest.Mocked<JwtService>;
-  let financeManagerEntity: FinanceManagerEntity;
+  let financeManagerEntity: UserEntity;
 
   beforeAll(async () => {
     app = await Test.createTestingModule({
@@ -28,15 +28,13 @@ describe('AuthService', () => {
     dataSource = app.get<DataSource>(DataSource);
     jwtService = app.get(JwtService);
 
-    const financeManager = new FinanceManagerEntity();
-    financeManager.name = 'Finance Manager Test';
-    financeManager.email = 'finance.manager.test@mail';
-    financeManager.password = '12345';
-    financeManager.securityQuestion = '';
-    financeManager.securityAnswer = '';
-    financeManagerEntity = await dataSource
-      .createEntityManager()
-      .save(financeManager);
+    const user = new UserEntity();
+    user.name = 'Finance Manager Test';
+    user.email = 'finance.manager.test@mail';
+    user.password = '12345';
+    user.securityQuestion = '';
+    user.securityAnswer = '';
+    financeManagerEntity = await dataSource.createEntityManager().save(user);
   });
 
   afterAll(async () => {

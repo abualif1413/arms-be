@@ -8,7 +8,7 @@ import {
   OneToOne,
   JoinColumn,
 } from 'typeorm';
-import { FinanceManagerEntity } from './finance-managers';
+import { UserEntity } from './users';
 import { InvoiceEntity } from './invoices';
 
 @Entity({ name: 'paid-invoices' })

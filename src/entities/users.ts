@@ -10,8 +10,8 @@ import {
 import * as bcrypt from 'bcrypt';
 import { InvoiceEntity } from './invoices';
 
-@Entity({ name: 'finance-managers' })
-export class FinanceManagerEntity {
+@Entity({ name: 'users' })
+export class UserEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -36,13 +36,9 @@ export class FinanceManagerEntity {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @OneToMany(
-    () => InvoiceEntity,
-    (invoiceEntity) => invoiceEntity.financeManager,
-    {
-      cascade: ['insert', 'update'],
-    },
-  )
+  @OneToMany(() => InvoiceEntity, (invoiceEntity) => invoiceEntity.user, {
+    cascade: ['insert', 'update'],
+  })
   invoices: InvoiceEntity[];
 
   @BeforeInsert()

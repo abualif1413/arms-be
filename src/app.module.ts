@@ -3,18 +3,19 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { entities } from './entities';
-import { FinanceManagerModule } from './modules/finance-manager/finance-manager.module';
+import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { InvoiceModule } from './modules/invoice/invoice.module';
+import { FlashSaleModule } from './modules/flash-sale/flash-sale.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { BullModule } from '@nestjs/bullmq';
 
 @Module({
   imports: [
     // Modules
-    FinanceManagerModule,
+    UserModule,
     AuthModule,
-    InvoiceModule,
+    FlashSaleModule,
 
     // Load configuration file
     ConfigModule.forRoot({
@@ -35,7 +36,18 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         database: configService.get<string>('ARMS_DB_NAME'),
         entities,
         synchronize: true,
-	timezone: 'Z',
+        timezone: 'Z',
+      }),
+    }),
+
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        connection: {
+          host: configService.get<string>('ARMS_REDIS_HOST'),
+          port: configService.get<number>('ARMS_REDIS_PORT'),
+        },
       }),
     }),
 

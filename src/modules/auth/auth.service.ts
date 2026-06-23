@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { FinanceManagerEntity } from '../../entities/finance-managers';
+import { UserEntity } from '../../entities/users';
 import { LoginAttemptDTO, LoginResponseDTO } from './auth.dto';
 
 @Injectable()
@@ -19,16 +19,13 @@ export class AuthService {
 
     await this.dataSource.transaction(async (transactionalEntityManager) => {
       // Check if email exists in user data, throw 409 error if user exists
-      const financeManager = await transactionalEntityManager.findOne(
-        FinanceManagerEntity,
-        {
-          where: {
-            email: loginAttemptDto.email,
-          },
+      const user = await transactionalEntityManager.findOne(UserEntity, {
+        where: {
+          email: loginAttemptDto.email,
         },
-      );
+      });
 
-      if (!financeManager) {
+      if (!user) {
         throw new HttpException(
           `The entered email address ${loginAttemptDto.email} does not match any existing account.`,
           HttpStatus.NOT_FOUND,
@@ -38,7 +35,7 @@ export class AuthService {
       // Check if the password has been entered is match
       const isPasswordMatch = await bcrypt.compare(
         loginAttemptDto.password,
-        financeManager.password,
+        user.password,
       );
 
       // If password doesn't match, throw error
@@ -51,13 +48,13 @@ export class AuthService {
 
       // Generate authentication token
       const authenticationToken = await this.jwtService.signAsync({
-        id: financeManager.id,
-        name: financeManager.name,
-        email: financeManager.email,
+        id: user.id,
+        name: user.name,
+        email: user.email,
       });
 
-      loginResponse.name = financeManager.name;
-      loginResponse.email = financeManager.email;
+      loginResponse.name = user.name;
+      loginResponse.email = user.email;
       loginResponse.authenticationToken = authenticationToken;
     });
 

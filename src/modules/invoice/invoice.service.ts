@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { DataSource } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { FinanceManagerEntity } from '../../entities/finance-managers';
+import { UserEntity } from '../../entities/users';
 import {
   CreateInvoiceDto,
   DataOwner,
@@ -36,7 +36,7 @@ export class InvoiceService {
     await this.dataSource.transaction(async (transactionalEntityManager) => {
       // Check if the user creating the invoice exists
       const financeManager = await transactionalEntityManager.findOne(
-        FinanceManagerEntity,
+        UserEntity,
         {
           where: {
             id: user.id,
@@ -104,7 +104,7 @@ export class InvoiceService {
     await this.dataSource.transaction(async (transactionalEntityManager) => {
       // Check if the user creating the invoice exists
       const financeManager = await transactionalEntityManager.findOne(
-        FinanceManagerEntity,
+        UserEntity,
         {
           where: {
             id: user.id,
@@ -181,7 +181,7 @@ export class InvoiceService {
     await this.dataSource.transaction(async (transactionalEntityManager) => {
       // Check if the user creating the invoice exists
       const financeManager = await transactionalEntityManager.findOne(
-        FinanceManagerEntity,
+        UserEntity,
         {
           where: {
             id: user.id,
@@ -320,7 +320,7 @@ export class InvoiceService {
     await this.dataSource.transaction(async (transactionalEntityManager) => {
       // Check if the user creating the invoice exists
       const financeManager = await transactionalEntityManager.findOne(
-        FinanceManagerEntity,
+        UserEntity,
         {
           where: {
             id: user.id,
@@ -395,7 +395,7 @@ export class InvoiceService {
     await this.dataSource.transaction(async (transactionalEntityManager) => {
       // Check if the user creating the invoice exists
       const financeManager = await transactionalEntityManager.findOne(
-        FinanceManagerEntity,
+        UserEntity,
         {
           where: {
             id: user.id,

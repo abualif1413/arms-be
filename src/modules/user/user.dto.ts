@@ -6,7 +6,7 @@ import {
   IsOptional,
 } from 'class-validator';
 
-export class RegisterFinanceManagerDTO {
+export class RegisterUserDTO {
   @IsNotEmpty({ message: 'Name is required' })
   name: string;
 
@@ -23,4 +23,3 @@ export class RegisterFinanceManagerDTO {
   @IsOptional()
   securityAnswer?: string;
 }
-
