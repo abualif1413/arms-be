@@ -16,10 +16,10 @@ export class FlashSaleEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ name: 'start_date', type: 'timestamp' })
+  @Column({ name: 'start_date', type: 'datetime' })
   startDate: Date;
 
-  @Column({ name: 'end_date', type: 'timestamp' })
+  @Column({ name: 'end_date', type: 'datetime' })
   endDate: Date;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
