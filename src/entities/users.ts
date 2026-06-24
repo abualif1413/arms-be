@@ -8,7 +8,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { InvoiceEntity } from './invoices';
 
 @Entity({ name: 'users' })
 export class UserEntity {
@@ -35,11 +34,6 @@ export class UserEntity {
 
   @UpdateDateColumn()
   updated_at: Date;
-
-  @OneToMany(() => InvoiceEntity, (invoiceEntity) => invoiceEntity.user, {
-    cascade: ['insert', 'update'],
-  })
-  invoices: InvoiceEntity[];
 
   @BeforeInsert()
   async hashPassword() {
