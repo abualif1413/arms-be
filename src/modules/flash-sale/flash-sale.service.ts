@@ -99,6 +99,7 @@ export class FlashSaleService {
   }
 
   async purchaseFlashSale(dto: PurchaseDTO): Promise<PurchaseEntity> {
+    const now = new Date();
     let purchase: PurchaseEntity;
 
     await this.dataSource.transaction(async (manager) => {
@@ -106,6 +107,10 @@ export class FlashSaleService {
         .createQueryBuilder(FlashSaleEntity, 'flashSale')
         .leftJoinAndSelect('flashSale.product', 'product')
         .where('flashSale.id = :id', { id: dto.flashSaleId })
+        .andWhere(
+          ':startDate BETWEEN flashSale.start_date AND flashSale.end_date',
+          { startDate: now },
+        )
         .setLock('pessimistic_write')
         .getOne();
 
