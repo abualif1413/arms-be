@@ -1,98 +1,481 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Flash Sale Service
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A simple Flash Sale service built with:
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+- NestJS
+- TypeScript
+- PostgreSQL
+- Redis
+- TypeORM
+- BullMQ
 
-## Description
+The purpose of this project is to demonstrate a basic flash sale system with stock protection, transaction handling, queue-based processing, and pessimistic locking to prevent overselling.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+---
 
-## Project setup
+# Prerequisites
 
-```bash
-$ npm install
-```
+Before running the application, ensure you have:
 
-## Compile and run the project
+- Node.js
+- npm
+- Docker
+- Docker Compose
 
-```bash
-# development
-$ npm run start
+---
 
-# watch mode
-$ npm run start:dev
+# Getting Started
 
-# production mode
-$ npm run start:prod
-```
+## 1. Start Infrastructure
 
-## Run tests
+Spin up PostgreSQL and Redis using Docker.
+
+You may use either syntax depending on your Docker version:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+docker compose up -d
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+or
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+docker-compose up -d
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+---
 
-## Resources
+## 2. Install Dependencies
 
-Check out a few resources that may come in handy when working with NestJS:
+```bash
+npm i
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+---
 
-## Support
+## 3. Run Application
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Development mode:
 
-## Stay in touch
+```bash
+npm run start:dev
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Production mode:
 
-## License
+```bash
+npm run start
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+At this point the service is ready for testing.
+
+---
+
+# Common Scripts
+
+## Run Application
+
+```bash
+npm run start
+```
+
+Starts the NestJS application.
+
+---
+
+```bash
+npm run start:dev
+```
+
+Starts the application in watch mode.
+
+---
+
+## Run Tests
+
+```bash
+npm run test:watch
+```
+
+Runs Jest in watch mode.
+
+---
+
+```bash
+npm run test:cov
+```
+
+Generates test coverage report.
+
+---
+
+# API Endpoints
+
+## Authentication
+
+### Login Attempt
+
+**Endpoint**
+
+```http
+POST /auth/login-attempt
+```
+
+**Controller Method**
+
+```typescript
+loginAttempt();
+```
+
+**Description**
+
+Authenticate user credentials and return access information.
+
+---
+
+## User
+
+### Register User
+
+**Endpoint**
+
+```http
+POST /user/register
+```
+
+**Controller Method**
+
+```typescript
+register();
+```
+
+**Description**
+
+Register a new user.
+
+---
+
+## Flash Sale
+
+### Create Flash Sale
+
+**Endpoint**
+
+```http
+POST /flash-sale
+```
+
+**Controller Method**
+
+```typescript
+create();
+```
+
+**Description**
+
+Create a new flash sale.
+
+---
+
+### Purchase Flash Sale
+
+**Endpoint**
+
+```http
+POST /flash-sale/purchase
+```
+
+**Controller Method**
+
+```typescript
+purchaseFlashSale();
+```
+
+**Description**
+
+Purchase an item from an active flash sale.
+
+Requires authenticated user.
+
+---
+
+### Get Active Flash Sale
+
+**Endpoint**
+
+```http
+GET /flash-sale
+```
+
+**Controller Method**
+
+```typescript
+getActive();
+```
+
+**Description**
+
+Retrieve today's active flash sale.
+
+Requires authenticated user.
+
+---
+
+### Get Recent Flash Sale
+
+**Endpoint**
+
+```http
+GET /flash-sale/recent
+```
+
+**Controller Method**
+
+```typescript
+getRecent();
+```
+
+**Description**
+
+Retrieve the most recently completed flash sale.
+
+---
+
+### Get Upcoming Flash Sale
+
+**Endpoint**
+
+```http
+GET /flash-sale/upcoming
+```
+
+**Controller Method**
+
+```typescript
+getUpcoming();
+```
+
+**Description**
+
+Retrieve the next scheduled flash sale.
+
+---
+
+# High Level Architecture
+
+```text
+Client
+   │
+   ▼
+NestJS API
+   │
+   ├── PostgreSQL (TypeORM)
+   │
+   ├── Redis
+   │
+   └── BullMQ
+```
+
+---
+
+# Flash Sale Creation Flow
+
+The following diagram illustrates the high-level flow when creating a flash sale.
+
+```mermaid
+graph TD;
+    Start([START 1.0]) --> Input[/INPUT THE DATE RANGE OF FLASH SALE/]
+    Input --> Decision{"IS VALIDATION SUCCESSFUL?"}
+
+    Decision -- FALSE --> Throw[THROW HTTP EXCEPTION] --> Finish([FINISH])
+    Decision -- TRUE --> Store[STORE DATA INTO DATABASE, Look at 1.1]
+
+    Store --> Response[RESPONSE HTTP SUCCESS WITH FLASH SALE INFORMATION]
+    Response --> Finish([FINISH])
+```
+
+---
+
+# Flash Sale Creation Transaction Flow
+
+This process is executed inside a database transaction to ensure consistency.
+
+```mermaid
+graph TD
+    Start([START 1.1]) --> StartTx[START DATABASE TRANSACTION]
+    StartTx --> StoreProduct[STORE PRODUCT DATA INTO DATABASE]
+    StoreProduct --> Decision1{"ANY ERROR?"}
+
+    Decision1 -- TRUE --> Rollback[ROLLBACK TRANSACTION] --> Finish([FINISH])
+    Decision1 -- FALSE --> StoreFlash[STORE FLASH SALE DATA INTO DATABASE]
+
+    StoreFlash --> Decision2{"ANY ERROR?"}
+
+    Decision2 -- TRUE --> Rollback
+    Decision2 -- FALSE --> Commit[COMMIT TRANSACTION]
+
+    Commit --> Finish
+```
+
+---
+
+# Purchase Flow
+
+The purchase operation is protected using:
+
+- Database Transaction
+- Pessimistic Locking
+- Duplicate Purchase Validation
+- Stock Validation
+- Queue-Based Processing
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Client Thread
+    participant App as Service Method
+    box Database Transaction
+    participant DB as PostgreSQL (DataSource)
+    end
+    participant Queue as BullMQ (purchaseQueue)
+
+    User->>App: purchaseFlashSale(dto)
+
+    App->>DB: Start Transaction
+
+    rect rgb(240, 248, 255)
+        Note over App, DB: CRITICAL SECTION: Locked by pessimistic_write
+        App->>DB: Query FlashSaleEntity with PESSIMISTIC_WRITE lock
+        DB-->>App: Return flashSale data (or blocks other threads here)
+    end
+
+    alt Flash Sale not found
+        App-->>User: Throw 404 (Flash sale not found)
+    end
+
+    App->>DB: Query UserEntity
+    DB-->>App: Return user data
+
+    alt User not found
+        App-->>User: Throw 401 (User not found)
+    end
+
+    App->>DB: Count existing purchases (PROCESSING/DONE)
+    DB-->>App: Return soldCount
+
+    alt soldCount >= availableStock
+        App-->>User: Throw 409 (Sold out)
+    end
+
+    App->>DB: Check if user already purchased
+    DB-->>App: Return existingPurchase
+
+    alt existingPurchase exists
+        App-->>User: Throw 409 (Already purchased)
+    end
+
+    App->>App: generatePurchaseCode()
+    App->>DB: Save new PurchaseEntity (Status: PROCESSING)
+    DB-->>App: Return saved purchase
+
+    App->>DB: Commit Transaction & Release Lock
+
+    App->>Queue: add('proceed-purchase', { purchaseId })
+    Queue-->>App: Job added successfully
+
+    App-->>User: Return purchase object
+```
+
+---
+
+# Transaction Strategy
+
+## Flash Sale Creation
+
+All database writes are wrapped in a single transaction.
+
+If any operation fails:
+
+```text
+ROLLBACK TRANSACTION
+```
+
+No partial data will be persisted.
+
+---
+
+## Flash Sale Purchase
+
+The purchase operation uses:
+
+```text
+PESSIMISTIC_WRITE
+```
+
+to lock the flash sale record and prevent race conditions during high traffic.
+
+This ensures:
+
+- No overselling
+- No duplicate purchases
+- Consistent stock calculation
+
+---
+
+# Purchase Processing Strategy
+
+When a purchase request succeeds:
+
+1. Database transaction begins.
+2. Flash sale row is locked using pessimistic locking.
+3. Purchase record is created with status:
+
+```text
+PROCESSING
+```
+
+4. Transaction is committed.
+5. Lock is released.
+6. Purchase job is pushed into BullMQ.
+7. Worker processes the purchase asynchronously.
+8. Purchase status becomes:
+
+```text
+DONE
+```
+
+Important:
+
+The BullMQ job must only be published **after the database transaction has been successfully committed**.
+
+This guarantees that workers never receive jobs for records that were rolled back.
+
+---
+
+# Technologies Used
+
+| Technology | Purpose                   |
+| ---------- | ------------------------- |
+| NestJS     | Backend Framework         |
+| TypeScript | Programming Language      |
+| PostgreSQL | Primary Database          |
+| TypeORM    | ORM                       |
+| Redis      | Queue Backend             |
+| BullMQ     | Background Job Processing |
+| Jest       | Testing Framework         |
+
+---
+
+# Future Improvements
+
+Potential enhancements:
+
+- JWT Authentication
+- Swagger/OpenAPI Documentation
+- Rate Limiting
+- Distributed Locking
+- Event-Driven Architecture
+- Metrics & Monitoring
+- Dead Letter Queue (DLQ)
+- Purchase Cancellation Flow
+
+---

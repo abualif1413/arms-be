@@ -44,8 +44,14 @@ export class FlashSaleController {
   }
 
   @Get()
-  async getActive(): Promise<FlashSaleInfoResponseDTO> {
-    const result = await this.flashSaleService.todayFlashSale();
+  async getActive(
+    @User() user: UserDecoratorDTO,
+  ): Promise<FlashSaleInfoResponseDTO> {
+    if (!user) {
+      throw new HttpException(`Unauthorized user.`, HttpStatus.UNAUTHORIZED);
+    }
+
+    const result = await this.flashSaleService.todayFlashSale(user.id);
     return { flashSaleInfo: result };
   }
 

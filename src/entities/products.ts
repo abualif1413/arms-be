@@ -15,10 +15,16 @@ export class ProductEntity {
   name: string;
 
   @Column({ type: 'varchar' })
+  description: string;
+
+  @Column({ type: 'varchar' })
   unit: string;
 
   @Column({ name: 'available_stock', type: 'int' })
   availableStock: number;
+
+  @Column({ type: 'double' })
+  price: number;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;

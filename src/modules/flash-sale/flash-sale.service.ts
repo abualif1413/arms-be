@@ -79,7 +79,9 @@ export class FlashSaleService {
         const product = await transactionalEntityManager.save(ProductEntity, {
           name: dto.productName,
           unit: dto.productUnit,
+          description: dto.productDescription,
           availableStock: dto.productAvailableStock,
+          price: dto.productPrice,
         });
 
         const flashSale = await transactionalEntityManager.save(
@@ -172,12 +174,18 @@ export class FlashSaleService {
     return purchase!;
   }
 
-  async todayFlashSale(): Promise<FlashSaleInfoDTO | null> {
+  async todayFlashSale(userId: string): Promise<FlashSaleInfoDTO | null> {
     const now = new Date();
 
     const flashSale = await this.flashSaleRepository
       .createQueryBuilder('flashSale')
       .leftJoinAndSelect('flashSale.product', 'product')
+      .leftJoinAndSelect(
+        'flashSale.purchases',
+        'purchases',
+        'purchases.user_id = :userId AND purchases.status <> :status',
+        { userId, status: 'failed' },
+      )
       .where('flashSale.start_date <= :now', { now })
       .andWhere('flashSale.end_date >= :now', { now })
       .getOne();

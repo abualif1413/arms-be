@@ -4,10 +4,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { ProductEntity } from './products';
+import { PurchaseEntity } from './purchase';
 
 @Entity({ name: 'flash_sales' })
 export class FlashSaleEntity {
@@ -29,4 +31,13 @@ export class FlashSaleEntity {
   @ManyToOne(() => ProductEntity)
   @JoinColumn({ name: 'product_id' })
   product: ProductEntity;
+
+  @OneToMany(
+    () => PurchaseEntity,
+    (purchaseEntity) => purchaseEntity.flashSale,
+    {
+      cascade: ['insert', 'update'],
+    },
+  )
+  purchases: PurchaseEntity[];
 }

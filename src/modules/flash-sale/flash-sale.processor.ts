@@ -41,6 +41,20 @@ export class FlashSaleProcessor extends WorkerHost {
     }
 
     try {
+      /**
+       * Simulates a heavy, complex purchasing workflow.
+       *
+       * This process includes time-consuming operations such as:
+       *  - Payment processing and validation
+       *  - Cross-border compliance and regulatory checks
+       *
+       * By isolating these operations into an asynchronous queue, we prevent
+       * blocking the main thread, ensuring a fast, responsive UX for the user
+       * immediately after they click "Purchase".
+       *
+       * and send mail is one of example that I make in this test
+       */
+
       await this.mailerService.sendMail({
         from: 'Flash Sale Info',
         to: purchase.user.email,
