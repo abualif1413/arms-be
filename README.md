@@ -108,6 +108,14 @@ Generates test coverage report.
 
 ---
 
+```bash
+npm run test:stress
+```
+
+Run stress test.
+
+---
+
 # API Endpoints
 
 ## Authentication
